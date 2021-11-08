@@ -52,6 +52,11 @@ var DivisionPrecision = 16
 // silently lose precision.
 var MarshalJSONWithoutQuotes = false
 
+// MarshalJSONBankRound should be set to true if you want the decimal to
+// be JSON marshaled with custom decimal places.
+var MarshalJSONBankRound = false
+var MarshalJSONBankRoundPlaces int32 = 0
+
 // ExpMaxIterations specifies the maximum number of iterations needed to calculate
 // precise natural exponent value using ExpHullAbrham method.
 var ExpMaxIterations = 1000
@@ -1341,11 +1346,16 @@ func (d *Decimal) UnmarshalJSON(decimalBytes []byte) error {
 
 // MarshalJSON implements the json.Marshaler interface.
 func (d Decimal) MarshalJSON() ([]byte, error) {
-	var str string
-	if MarshalJSONWithoutQuotes {
-		str = d.String()
+	var str, roundedString string
+	if MarshalJSONBankRound {
+		roundedString = d.RoundBank(MarshalJSONBankRoundPlaces).StringFixed(MarshalJSONBankRoundPlaces)
 	} else {
-		str = "\"" + d.String() + "\""
+		roundedString = d.String()
+	}
+	if MarshalJSONWithoutQuotes {
+		str = roundedString
+	} else {
+		str = "\"" + roundedString + "\""
 	}
 	return []byte(str), nil
 }

@@ -1,3 +1,6 @@
+## Decimal v1.3.2
+- Added rounding feature for JSON marshalling
+
 ## Decimal v1.3.1
 
 #### ENHANCEMENTS
